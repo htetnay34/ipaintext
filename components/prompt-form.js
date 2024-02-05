@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Message from "./message";
-import langdetect from "langdetect";
 
 export default function PromptForm({
   initialPrompt,
@@ -9,17 +8,10 @@ export default function PromptForm({
   disabled = false,
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
-  const [isMyanmar, setIsMyanmar] = useState(false);
 
   useEffect(() => {
     setPrompt(initialPrompt);
-    detectLanguage(initialPrompt);
   }, [initialPrompt]);
-
-  const detectLanguage = (text) => {
-    const detectedLanguage = langdetect.detectOne(text);
-    setIsMyanmar(detectedLanguage === "my");
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -28,7 +20,7 @@ export default function PromptForm({
   };
 
   if (disabled) {
-    return null; // or any other fallback for disabled state
+    return;
   }
 
   return (
@@ -47,10 +39,7 @@ export default function PromptForm({
           type="text"
           name="prompt"
           value={prompt}
-          onChange={(e) => {
-            setPrompt(e.target.value);
-            detectLanguage(e.target.value);
-          }}
+          onChange={(e) => setPrompt(e.target.value)}
           placeholder="Your message..."
           className={`block w-full flex-grow${
             disabled ? " rounded-md" : " rounded-l-md"
@@ -58,7 +47,7 @@ export default function PromptForm({
           disabled={disabled}
         />
 
-        {isMyanmar || disabled ? null : (
+        {disabled || (
           <button
             className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
             type="submit"
