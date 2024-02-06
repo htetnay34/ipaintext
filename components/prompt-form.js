@@ -9,6 +9,7 @@ export default function PromptForm({
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [isMyanmar, setIsMyanmar] = useState(false);
+  const [isTranslated, setIsTranslated] = useState(false);
   const [typingTimeout, setTypingTimeout] = useState(null);
 
   useEffect(() => {
@@ -19,11 +20,6 @@ export default function PromptForm({
   const isMyanmarLanguage = (text) => {
     const myanmarCharacterRegex = /[\u1000-\u109F]/;
     return myanmarCharacterRegex.test(text);
-  };
-
-  const isEnglishLanguage = (text) => {
-    const englishCharacterRegex = /^[A-Za-z0-9\s.,?!]+$/;
-    return englishCharacterRegex.test(text);
   };
 
   const handleInputChange = (text) => {
@@ -40,16 +36,37 @@ export default function PromptForm({
       setTimeout(() => {
         if (isMyanmar) {
           translateToEnglish(text)
-            .then((translation) => setPrompt(translation))
+            .then((translation) => {
+              setPrompt(translation);
+              setIsTranslated(true);
+            })
             .catch((error) => console.error('Translation error:', error));
+        } else {
+          setIsTranslated(false);
         }
       }, 2000)
     );
   };
 
   const translateToEnglish = (text) => {
-    // Assume you have a translation function here (like the previous examples)
-    return Promise.resolve(`Translated: ${text}`);
+    return new Promise((resolve, reject) => {
+      const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=my&tl=en&dt=t&q=${encodeURIComponent(text)}`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          // Extract the translated text from the response
+          if (data && data[0] && data[0][0] && data[0][0][0]) {
+            resolve(data[0][0][0]);
+          } else {
+            reject('Translation to English failed');
+          }
+        })
+        .catch(error => {
+          console.error('Translation to English failed:', error);
+          reject(error);
+        });
+    });
   };
 
   const handleSubmit = (e) => {
@@ -71,7 +88,7 @@ export default function PromptForm({
         </label>
       </Message>
 
-      <div className="flex mt-8">
+      <div className={`flex mt-8 ${isTranslated ? 'translated' : ''}`}>
         <input
           id="prompt-input"
           type="text"
@@ -85,7 +102,7 @@ export default function PromptForm({
           disabled={disabled}
         />
         
-        {isMyanmar || !isEnglishLanguage(prompt) || disabled ? null : (
+        {isMyanmar || !isTranslated || disabled ? null : (
           <button
             className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
             type="submit"
