@@ -9,6 +9,7 @@ export default function PromptForm({
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
   const [isMyanmar, setIsMyanmar] = useState(false);
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
   useEffect(() => {
     setPrompt(initialPrompt);
@@ -29,19 +30,21 @@ export default function PromptForm({
     setPrompt(text);
     setIsMyanmar(isMyanmarLanguage(text));
 
-    // If the language is English, show the "Paint" button
-    if (isEnglishLanguage(text)) {
-      setIsMyanmar(false);
-    } else {
-      // If the language is Myanmar, trigger translation after a delay
-      if (isMyanmar) {
-        setTimeout(() => {
+    // Clear any previous typing timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+
+    // Set a new timeout to trigger translation after 2 seconds of no typing
+    setTypingTimeout(
+      setTimeout(() => {
+        if (isMyanmar) {
           translateToEnglish(text)
             .then((translation) => setPrompt(translation))
             .catch((error) => console.error('Translation error:', error));
-        }, 2000);
-      }
-    }
+        }
+      }, 2000)
+    );
   };
 
   const translateToEnglish = (text) => {
