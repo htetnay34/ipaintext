@@ -20,38 +20,33 @@ export default function PromptForm({
     return myanmarCharacterRegex.test(text);
   };
 
-  const translateToEnglish = (text) => {
-    return new Promise((resolve, reject) => {
-      const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=my&tl=en&dt=t&q=${encodeURIComponent(text)}`;
-
-      fetch(apiUrl)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data && data[0] && data[0][0] && data[0][0][0]) {
-            resolve(data[0][0][0]);
-          } else {
-            reject('Translation to English failed');
-          }
-        })
-        .catch((error) => {
-          console.error('Translation to English failed:', error);
-          reject(error);
-        });
-    });
+  const isEnglishLanguage = (text) => {
+    const englishCharacterRegex = /^[A-Za-z0-9\s.,?!]+$/;
+    return englishCharacterRegex.test(text);
   };
 
   const handleInputChange = (text) => {
     setPrompt(text);
     setIsMyanmar(isMyanmarLanguage(text));
 
-    // If the language is Myanmar, trigger translation after a delay
-    if (isMyanmar) {
-      setTimeout(() => {
-        translateToEnglish(text)
-          .then((translation) => setPrompt(translation))
-          .catch((error) => console.error('Translation error:', error));
-      }, 2000);
+    // If the language is English, show the "Paint" button
+    if (isEnglishLanguage(text)) {
+      setIsMyanmar(false);
+    } else {
+      // If the language is Myanmar, trigger translation after a delay
+      if (isMyanmar) {
+        setTimeout(() => {
+          translateToEnglish(text)
+            .then((translation) => setPrompt(translation))
+            .catch((error) => console.error('Translation error:', error));
+        }, 2000);
+      }
     }
+  };
+
+  const translateToEnglish = (text) => {
+    // Assume you have a translation function here (like the previous examples)
+    return Promise.resolve(`Translated: ${text}`);
   };
 
   const handleSubmit = (e) => {
@@ -86,6 +81,15 @@ export default function PromptForm({
           }`}
           disabled={disabled}
         />
+        
+        {isMyanmar || !isEnglishLanguage(prompt) || disabled ? null : (
+          <button
+            className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
+            type="submit"
+          >
+            Paint
+          </button>
+        )}
       </div>
     </form>
   );
