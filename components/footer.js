@@ -19,7 +19,7 @@ export default function Footer({ events, startOver, handleImageDropped }) {
         {events.length > 1 && (
           <button className="lil-button" onClick={startOver}>
             <StartOverIcon className="icon" />
-            Start over
+            အစကနေပြန်စ
           </button>
         )}
 
@@ -36,21 +36,14 @@ export default function Footer({ events, startOver, handleImageDropped }) {
           </Link>)
         )}
 
-        <Link
-          href="https://github.com/replicate/instruct-pix2pix-demo"
-          className="lil-button"
-          target="_blank"
-          rel="noopener noreferrer">
-
-          <CodeIcon className="icon" />Fork repo
-        </Link>
+      
       </div>
 
       <div className="text-center lil-text mt-8">
       <div className="inline-block py-2 px-4 border border-yellow-200 rounded-lg bg-[#fef6aa]">
-      🤔 Are you a developer and want to learn how to build this? Check out the{" "}
+      🤔Writtech AI Myanmar မှာ Membership plan များဝယ်ယူအသုံးပြုလိုပါက ဒီလင့်လေးကိုနိပ်ပါ Check out the{" "}
         <Link
-          href="https://github.com/replicate/paint-with-words#readme"
+          href="https://ai.writtech.com"
           target="_blank">
           README
         </Link>.
@@ -59,22 +52,22 @@ export default function Footer({ events, startOver, handleImageDropped }) {
 
       <div className="text-center lil-text mt-8">
         Powered by{" "}
-        <Link href="https://www.timothybrooks.com/instruct-pix2pix/" target="_blank">
-          InstructPix2Pix
+        <Link href="https://www.facebook.com/infinitytechmyanmar" target="_blank">
+          Infinith Tech
         </Link>
         ,{" "}
         <Link
-          href="https://replicate.com/timothybrooks/instruct-pix2pix?utm_source=project&utm_campaign=paintbytext"
+          href="https://infinitai.online"
           target="_blank">
-          Replicate
+          Infinity AI
         </Link>
         ,{" "}
-        <Link href="https://vercel.com/templates/ai" target="_blank">
-          Vercel
+        <Link href="https://writtech.com" target="_blank">
+          Writtech Global
         </Link>
         , and{" "}
-        <Link href="https://github.com/replicate/instruct-pix2pix-demo" target="_blank">
-          GitHub
+        <Link href="https://ai.writtech.com" target="_blank">
+          Writtech မြန်မာ
         </Link>
       </div>
     </footer>
