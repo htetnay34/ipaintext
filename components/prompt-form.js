@@ -102,14 +102,12 @@ export default function PromptForm({
           disabled={disabled}
         />
         
-        {isMyanmar || !isTranslated || disabled ? null : (
-          <button
-            className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
-            type="submit"
-          >
-            Paint
-          </button>
-        )}
+        <button
+          className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
+          type="submit"
+        >
+          Paint
+        </button>
       </div>
     </form>
   );
