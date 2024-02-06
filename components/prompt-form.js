@@ -8,10 +8,18 @@ export default function PromptForm({
   disabled = false,
 }) {
   const [prompt, setPrompt] = useState(initialPrompt);
+  const [isMyanmar, setIsMyanmar] = useState(false);
 
   useEffect(() => {
     setPrompt(initialPrompt);
+    setIsMyanmar(isMyanmarLanguage(initialPrompt));
   }, [initialPrompt]);
+
+  const isMyanmarLanguage = (text) => {
+    // Myanmar Unicode block: U+1000 - U+109F
+    const myanmarCharacterRegex = /[\u1000-\u109F]/;
+    return myanmarCharacterRegex.test(text);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,7 +28,7 @@ export default function PromptForm({
   };
 
   if (disabled) {
-    return;
+    return null; // or any other fallback for disabled state
   }
 
   return (
@@ -39,7 +47,10 @@ export default function PromptForm({
           type="text"
           name="prompt"
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={(e) => {
+            setPrompt(e.target.value);
+            setIsMyanmar(isMyanmarLanguage(e.target.value));
+          }}
           placeholder="Your message..."
           className={`block w-full flex-grow${
             disabled ? " rounded-md" : " rounded-l-md"
@@ -47,7 +58,7 @@ export default function PromptForm({
           disabled={disabled}
         />
 
-        {disabled || (
+        {isMyanmar || disabled ? null : (
           <button
             className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
             type="submit"
