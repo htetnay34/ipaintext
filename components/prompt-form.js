@@ -16,14 +16,46 @@ export default function PromptForm({
   }, [initialPrompt]);
 
   const isMyanmarLanguage = (text) => {
-    // Myanmar Unicode block: U+1000 - U+109F
     const myanmarCharacterRegex = /[\u1000-\u109F]/;
     return myanmarCharacterRegex.test(text);
   };
 
+  const translateToEnglish = (text) => {
+    return new Promise((resolve, reject) => {
+      const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=my&tl=en&dt=t&q=${encodeURIComponent(text)}`;
+
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data && data[0] && data[0][0] && data[0][0][0]) {
+            resolve(data[0][0][0]);
+          } else {
+            reject('Translation to English failed');
+          }
+        })
+        .catch((error) => {
+          console.error('Translation to English failed:', error);
+          reject(error);
+        });
+    });
+  };
+
+  const handleInputChange = (text) => {
+    setPrompt(text);
+    setIsMyanmar(isMyanmarLanguage(text));
+
+    // If the language is Myanmar, trigger translation after a delay
+    if (isMyanmar) {
+      setTimeout(() => {
+        translateToEnglish(text)
+          .then((translation) => setPrompt(translation))
+          .catch((error) => console.error('Translation error:', error));
+      }, 2000);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setPrompt("");
     onSubmit(e);
   };
 
@@ -47,25 +79,13 @@ export default function PromptForm({
           type="text"
           name="prompt"
           value={prompt}
-          onChange={(e) => {
-            setPrompt(e.target.value);
-            setIsMyanmar(isMyanmarLanguage(e.target.value));
-          }}
+          onChange={(e) => handleInputChange(e.target.value)}
           placeholder="Your message..."
           className={`block w-full flex-grow${
             disabled ? " rounded-md" : " rounded-l-md"
           }`}
           disabled={disabled}
         />
-
-        {isMyanmar || disabled ? null : (
-          <button
-            className="bg-black text-white rounded-r-md text-small inline-block p-3 flex-none"
-            type="submit"
-          >
-            Paint
-          </button>
-        )}
       </div>
     </form>
   );
